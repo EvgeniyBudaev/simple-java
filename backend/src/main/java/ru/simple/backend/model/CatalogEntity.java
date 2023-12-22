@@ -11,8 +11,8 @@ public class CatalogEntity {
     private Long id;
     private String alias;
     private LocalDateTime createdAt;
-    private boolean deleted;
-    private boolean enabled;
+    private Boolean deleted;
+    private Boolean enabled;
     private String image;
     private String name;
     private LocalDateTime updatedAt;
