@@ -2,10 +2,10 @@ package ru.simple.backend.config;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
-public class EnvLoader {
+public class APIConfig {
     public static void loadEnv() {
         Dotenv dotenv = Dotenv.configure().load();
-        
+
         String springDatasourceUrl = dotenv.get("SPRING_DATASOURCE_URL");
         String postgresUser = dotenv.get("POSTGRES_USER");
         String postgresPassword = dotenv.get("POSTGRES_PASSWORD");
