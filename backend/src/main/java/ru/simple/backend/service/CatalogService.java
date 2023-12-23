@@ -6,7 +6,7 @@ import ru.simple.backend.dto.catalog.request.RequestCatalogCreateDto;
 import ru.simple.backend.dto.catalog.request.RequestCatalogUpdateDto;
 import ru.simple.backend.model.CatalogEntity;
 
-import java.util.Collection;
+import java.util.List;
 
 @Service
 public class CatalogService {
@@ -20,6 +20,10 @@ public class CatalogService {
         return catalogDao.create(requestCatalogCreateDto);
     }
 
+    public CatalogEntity delete(String uuid) {
+        return catalogDao.delete(uuid);
+    }
+
     public CatalogEntity update(RequestCatalogUpdateDto requestCatalogUpdateDto) {
         return catalogDao.update(requestCatalogUpdateDto);
     }
@@ -28,7 +32,7 @@ public class CatalogService {
         return catalogDao.findByUuid(uuid);
     }
 
-    public Collection<CatalogEntity> getList() {
+    public List<CatalogEntity> getList() {
         return catalogDao.getList();
     }
 }
