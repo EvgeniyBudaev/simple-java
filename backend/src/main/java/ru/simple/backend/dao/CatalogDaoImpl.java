@@ -9,11 +9,12 @@ import ru.simple.backend.dto.catalog.request.RequestCatalogUpdateDto;
 import ru.simple.backend.exception.InternalServerException;
 import ru.simple.backend.exception.NotFoundException;
 import ru.simple.backend.model.CatalogEntity;
+import ru.simple.backend.model.PaginationEntity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -46,7 +47,15 @@ public class CatalogDaoImpl implements CatalogDao {
 
     private static final String GET_CATALOG_LIST =
             "SELECT *\n"
-                    + "FROM catalogs";
+                    + "FROM catalogs\n" +
+                    "WHERE deleted = false\n" +
+                    "ORDER BY updated_at DESC\n" +
+                    "LIMIT :limit OFFSET :offset";
+
+    private static final String GET_TOTAL_ITEMS_BY_CATALOG_LIST =
+            "SELECT COUNT(*)\n"
+                    + "FROM catalogs\n" +
+                    "WHERE deleted = false";
 
     public CatalogDaoImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
@@ -154,10 +163,15 @@ public class CatalogDaoImpl implements CatalogDao {
     }
 
     @Override
-    public List<CatalogEntity> getList() {
+    public PaginationEntity<List<CatalogEntity>> getList(Integer page, Integer limit) {
         try {
-            return new ArrayList<>(namedParameterJdbcTemplate
-                    .query(GET_CATALOG_LIST, (resultSet, i) -> CatalogEntity.builder()
+            Integer offset = (page - 1) * limit;
+            MapSqlParameterSource params = new MapSqlParameterSource()
+                    .addValue("limit", limit)
+                    .addValue("offset", offset);
+            // Получение пагинированного списка каталогов
+            List<CatalogEntity> catalogList = new ArrayList<>(namedParameterJdbcTemplate
+                    .query(GET_CATALOG_LIST, params, (resultSet, i) -> CatalogEntity.builder()
                             .id(resultSet.getLong("id"))
                             .alias(resultSet.getString("alias"))
                             .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
@@ -168,11 +182,19 @@ public class CatalogDaoImpl implements CatalogDao {
                             .updatedAt(resultSet.getTimestamp("updated_at").toLocalDateTime())
                             .uuid(resultSet.getString("uuid"))
                             .build()));
+            // Получение общего количества элементов
+            Integer totalItems = namedParameterJdbcTemplate.queryForObject(
+                    GET_TOTAL_ITEMS_BY_CATALOG_LIST,
+                    params,
+                    Integer.class);
+
+            PaginationEntity<List<CatalogEntity>> paginationEntity = new PaginationEntity<>(page, limit, totalItems);
+            paginationEntity.setContent(Collections.singletonList(catalogList));
+            return paginationEntity;
         } catch (Exception e) {
             throw new InternalServerException(
                     "Ошибка сервера",
                     "Ошибка сервера: " + e.getMessage());
         }
-
     }
 }

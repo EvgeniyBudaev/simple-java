@@ -3,6 +3,7 @@ package ru.simple.backend.dao;
 import ru.simple.backend.dto.catalog.request.RequestCatalogCreateDto;
 import ru.simple.backend.dto.catalog.request.RequestCatalogUpdateDto;
 import ru.simple.backend.model.CatalogEntity;
+import ru.simple.backend.model.PaginationEntity;
 
 import java.util.List;
 
@@ -15,5 +16,5 @@ public interface CatalogDao {
 
     CatalogEntity findByUuid(String uuid);
 
-    List<CatalogEntity> getList();
+    PaginationEntity<List<CatalogEntity>> getList(Integer page, Integer limit);
 }

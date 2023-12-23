@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.simple.backend.dto.catalog.request.RequestCatalogCreateDto;
 import ru.simple.backend.dto.catalog.request.RequestCatalogUpdateDto;
 import ru.simple.backend.model.CatalogEntity;
+import ru.simple.backend.model.PaginationEntity;
 import ru.simple.backend.service.CatalogService;
 
 import java.util.List;
@@ -41,7 +42,10 @@ public class CatalogController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<CatalogEntity>> getList() {
-        return ResponseEntity.status(HttpStatus.OK).body(catalogService.getList());
+    public ResponseEntity<PaginationEntity<List<CatalogEntity>>> getList(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "1") Integer limit
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(catalogService.getList(page, limit));
     }
 }

@@ -5,6 +5,7 @@ import ru.simple.backend.dao.CatalogDao;
 import ru.simple.backend.dto.catalog.request.RequestCatalogCreateDto;
 import ru.simple.backend.dto.catalog.request.RequestCatalogUpdateDto;
 import ru.simple.backend.model.CatalogEntity;
+import ru.simple.backend.model.PaginationEntity;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class CatalogService {
         return catalogDao.findByUuid(uuid);
     }
 
-    public List<CatalogEntity> getList() {
-        return catalogDao.getList();
+    public PaginationEntity<List<CatalogEntity>> getList(Integer page, Integer limit) {
+        return catalogDao.getList(page, limit);
     }
 }
