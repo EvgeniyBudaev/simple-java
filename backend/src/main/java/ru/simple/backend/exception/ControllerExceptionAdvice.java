@@ -25,7 +25,7 @@ public class ControllerExceptionAdvice {
         error.setStatusCode(e.getStatusCode().value());
         error.setServiceName("simple-service");
         error.setSuccess(false);
-        error.setDeveloperMessage(e.getDevelopMessage());
+        error.setDevelopMessage(e.getDevelopMessage());
         error.setUserMessage(e.getUserMessage());
 
         return error;

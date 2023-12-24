@@ -92,9 +92,9 @@ public class CatalogDaoImpl implements CatalogDao {
             );
         } catch (Exception e) {
             throw new InternalServerException(
-                    "Ошибка сервера",
-                    "Каталог с name: " + requestCatalogCreateDto.getName() +
-                            " не удалось создать. Ошибка: " + e.getMessage());
+                    "Server error",
+                    "Catalog with name: " + requestCatalogCreateDto.getName() +
+                            " could not be created. Error: " + e.getMessage());
         }
     }
 
@@ -109,11 +109,12 @@ public class CatalogDaoImpl implements CatalogDao {
                     .addValue("uuid", uuid);
             namedParameterJdbcTemplate.update(DELETE_CATALOG, parameters);
             catalog.setDeleted(true);
+            catalog.setUpdatedAt(LocalDateTime.now());
             return catalog;
         } catch (Exception e) {
             throw new InternalServerException(
-                    "Ошибка сервера",
-                    "Каталог с uuid: " + uuid + " не удалось удалить. Ошибка: " + e.getMessage());
+                    "Server error",
+                    "Catalog with uuid: " + uuid + " could not be deleted. Error: " + e.getMessage());
         }
     }
 
@@ -132,9 +133,9 @@ public class CatalogDaoImpl implements CatalogDao {
             return findByUuid(requestCatalogUpdateDto.getUuid());
         } catch (Exception e) {
             throw new InternalServerException(
-                    "Ошибка сервера",
-                    "Каталог с uuid: " + requestCatalogUpdateDto.getUuid() +
-                            " не удалось обновить. Ошибка: " + e.getMessage());
+                    "Server error",
+                    "Catalog with uuid: " + requestCatalogUpdateDto.getUuid() +
+                            " could not be updated. Error: " + e.getMessage());
         }
     }
 
@@ -159,8 +160,8 @@ public class CatalogDaoImpl implements CatalogDao {
                             .build());
         } catch (Exception e) {
             throw new NotFoundException(
-                    "Каталог не найден",
-                    "Каталог с uuid: " + uuid + " не найден. Ошибка: " + e.getMessage());
+                    "Catalog not found",
+                    "Catalog with uuid: " + uuid + " not found. Error: " + e.getMessage());
         }
     }
 
@@ -171,7 +172,7 @@ public class CatalogDaoImpl implements CatalogDao {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("limit", limit)
                     .addValue("offset", offset);
-            // Получение пагинированного списка каталогов
+            // Getting a paginated list of catalogs
             List<CatalogEntity> catalogList = new ArrayList<>(namedParameterJdbcTemplate
                     .query(GET_CATALOG_LIST, params, (resultSet, i) -> CatalogEntity.builder()
                             .id(resultSet.getLong("id"))
@@ -184,7 +185,7 @@ public class CatalogDaoImpl implements CatalogDao {
                             .updatedAt(resultSet.getTimestamp("updated_at").toLocalDateTime())
                             .uuid(resultSet.getString("uuid"))
                             .build()));
-            // Получение общего количества элементов
+            // Getting the total number of elements
             Integer totalItems = namedParameterJdbcTemplate.queryForObject(
                     GET_TOTAL_ITEMS_BY_CATALOG_LIST,
                     params,
@@ -195,8 +196,8 @@ public class CatalogDaoImpl implements CatalogDao {
             return paginationEntity;
         } catch (Exception e) {
             throw new InternalServerException(
-                    "Ошибка сервера",
-                    "Ошибка сервера: " + e.getMessage());
+                    "Server error",
+                    "Server error: " + e.getMessage());
         }
     }
 }

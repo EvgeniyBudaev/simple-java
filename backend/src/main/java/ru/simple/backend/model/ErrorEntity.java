@@ -7,6 +7,6 @@ public class ErrorEntity {
     private String serviceName;
     private Integer statusCode;
     private Boolean success;
-    private String developerMessage;
+    private String developMessage;
     private String userMessage;
 }
