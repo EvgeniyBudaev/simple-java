@@ -29,7 +29,7 @@ public class CatalogDaoImpl implements CatalogDao {
             "UPDATE catalogs\n" +
                     "SET deleted = :deleted,\n" +
                     "updated_at = :updatedAt\n" +
-                    "WHERE uuid = cast(:uuid as uuid)";
+                    "WHERE uuid = cast(:uuid as uuid) AND deleted = false";
 
     private static final String UPDATE_CATALOG =
             "UPDATE catalogs\n" +
@@ -38,15 +38,15 @@ public class CatalogDaoImpl implements CatalogDao {
                     "image = :image,\n" +
                     "name = :name,\n" +
                     "updated_at = :updatedAt\n" +
-                    "WHERE uuid = cast(:uuid as uuid)";
+                    "WHERE uuid = cast(:uuid as uuid) AND deleted = false";
 
     private static final String GET_CATALOG_BY_UUID =
-            "SELECT *\n"
+            "SELECT id, alias, created_at, deleted, enabled, image, name, updated_at, uuid\n"
                     + "FROM catalogs\n"
-                    + "WHERE uuid = cast(:uuid as uuid)";
+                    + "WHERE uuid = cast(:uuid as uuid) AND deleted = false";
 
     private static final String GET_CATALOG_LIST =
-            "SELECT *\n"
+            "SELECT id, alias, created_at, deleted, enabled, image, name, updated_at, uuid\n"
                     + "FROM catalogs\n" +
                     "WHERE deleted = false\n" +
                     "ORDER BY updated_at DESC\n" +
@@ -102,12 +102,14 @@ public class CatalogDaoImpl implements CatalogDao {
     @Override
     public CatalogEntity delete(String uuid) {
         try {
+            CatalogEntity catalog = findByUuid(uuid);
             MapSqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue("deleted", true)
                     .addValue("updatedAt", LocalDateTime.now())
                     .addValue("uuid", uuid);
             namedParameterJdbcTemplate.update(DELETE_CATALOG, parameters);
-            return findByUuid(uuid);
+            catalog.setDeleted(true);
+            return catalog;
         } catch (Exception e) {
             throw new InternalServerException(
                     "Ошибка сервера",
